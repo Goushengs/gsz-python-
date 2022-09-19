@@ -1,0 +1,33 @@
+
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from bs4 import BeautifulSoup
+from lxml import etree
+import urllib.request
+import time
+s = Service(r"D:\pythontest\venv\Scripts\chromedrivers.exe")
+driver = webdriver.Chrome(service=s)
+
+driver.get('https://pic.sogou.com/pics?ie=utf8&p=40230504&interV=kKIOkrELjboMmLkEkL0TkKIJlrELjboLmLkElbcTkKIMkbELjbgQmLkEkL8TkKIRmLkEk78TkKILkbHkOFeOL34ElKJJ0qR7zOMTKVeSXaIPjflHyfsGwOVFmUHpGz0ElKJLzO1H1qR7zOM%3D_-2083811639&query=%E8%A1%A8%E6%83%85%E5%8C%85')
+def down(content,j):
+    tree = etree.HTML(content)
+    name_list = tree.xpath('//div[@class="about-img"]/p/text()')
+    # print(name_list[0].strip())
+    src_list = tree.xpath('//div[@class="img-layout"]//img/@data-src')
+    # print(src_list)
+    for i in range(len(name_list)):
+        name = name_list[i].strip()
+        src = src_list[i]
+        print(name+str(j)+'_'+str(i))
+        urllib.request.urlretrieve(url=src, filename='./loveImg/' + name+str(j)+'_'+str(i) + '.jpg')
+if __name__ == '__main__':
+    content = driver.page_source
+    down(content,6)
+    for j in range(5):
+        time.sleep(5)
+        js_bottom = 'document.documentElement.scrollTop=200000'
+        driver.execute_script(js_bottom)
+        content = driver.page_source
+        print(j)
+        down(content,j)
+        time.sleep(1)
